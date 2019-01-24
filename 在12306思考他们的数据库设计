@@ -1,0 +1,274 @@
+简单需求场景：
+1. 查询余票，用户在购票前通常会查一下到达目的地有哪些余票，它属于一个高并发的操作，同时需要统计余票张数，需要很强的CPU来支撑实时的查询。
+
+2. 购票，购票和查询不一样，购票是会改变库存的，所以对数据库来说是更新的操作。
+
+而且购票很可能发生冲突，例如很多人要买同一趟车的票，那就出现冲突了，到底卖给谁呢？
+
+需要考虑锁冲突，尽量的让不同的人购买时可并行，或者可以合并多人的购票请求，来减少数据库的更新操作。
+
+3. 中转乘车，当用户需要购买的起点和到达站无票时，需要计算中转的搭乘方案。
+
+比如从北京到上海，如果没有直达车，是不是该转车呢？转哪趟，在哪里转就成了问题，简单一点就是买票的人自己想。
+
+高级一点的话，可以让12306给你推荐路线，这个涉及的是数据库的路径规划功能。
+
+
+思考：
+PostgreSQL 是全世界最高级的开源数据库，几乎是适应任何场景！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+
+针对12306使用法宝（猜想）
+1. 法宝1，varbit类型
+
+使用varbit存储每趟车的每个座位途径站点是否已销售。
+
+例如 G1921车次，从北京到上海，途径天津、徐州、南京、苏州。包括起始站，总共6个站点。 那么使用6个比特位来表示。
+如果我要买从天津到徐州的，这个值变更为(下车站的BIT不需要设置)
+
+'010000'     
+这个位置还可以卖从北京到天津，从徐州到终点的任意站点。
+
+余票统计也很方便，对整个车次根据BIT做聚合计算即可。
+
+统计任意组合站点的余票（ 北京-天津, 北京-徐州, 北京-南京, 北京-苏州, 北京-上海, 天津-徐州, 天津-南京, ......, 苏州-上海 ）
+
+udf_count(varbit) returns record    
+
+通过varbit，解决了统计余票的需求、售票无空洞的需求。
+
+法宝2：数组类型
+使用数组存储每趟车的起始站点，途经站点。
+
+使用数组来存储，好处是可以使用到数组的GIN索引，快速的检索哪些车次是可以搭乘的。
+
+例如查询从北京到南京的车次。
+select 车次 from 全国列车时刻表 where column_arr @> array['北京','南京'];  
+这SQL执行效率非常高 每秒执行几十万不是问题
+
+3. 法宝3，skip locked
+
+这个特性是跳过已被锁定的行，比如用户在购买某一趟从北京到南京的车票时，其实是一次UPDATE ... SET BIT的操作。
+
+但是很可能其他用户也在购买，可能就会出现锁冲突，为了避免这个情况发生，可以skip locked，跳过锁冲突，直接找另一个座位。
+
+
+select * from table   
+  where column1='车次号'   -- 指定车次  
+  and column2='车次日期'   -- 指定发车日期  
+  -- and mod(pg_backend_pid(),100) = mod(pk,100)   -- 提高并发，如果有多个连接并发的在更新，可以直接分开落到不同的行，但是可能某些pID卖完了，可能会找不到票，建议不要开启这个条件  
+  and column4='席别'  -- 指定席别  
+  and getbit(column3, 开始站点位置, 结束站点位置-1) = '0...0'  -- 获取起始位置的BIT位，要求全部为0  
+  order by column3 desc   -- 这个目的是先把已经卖了散票的的座位拿来卖，也符合铁大哥的思想，尽量把起点和重点的票卖出去，减少空洞  
+  for update  
+  skip locked  -- 跳过被锁的行，老牛逼了，不需要锁等待  
+  limit ?;     -- 要买几张票  
+  法宝3解决了一伙人来抢票时，在同一趟车的座位发生冲突的问题。
+
+4. 法宝4，cursor
+
+如果要查询大量记录，可以使用cursor，减少重复扫描。
+
+5. 法宝5，路径规划
+
+如果用户选择直达车已经无票了，可以自动计算如何转乘，根据用户的乘车站点和目的地选择最佳搭乘路线。
+
+
+数据库设计（伪代码）
+. 列车信息表 :
+
+create table train     
+(id int primary key, --主键    
+go_date date, -- 发车日期    
+train_num name, -- 车次    
+station text[] -- 途径站点数组    
+);     
+2. 位置信息表 :
+
+create table train_sit     
+(id serial8 primary key, -- 主键    
+tid int references train (id), --关联列车ID    
+bno int, -- 车厢或bucket号    
+sit_level text, -- 席别  
+sit_no int,  -- 座位号  
+station_bit varbit  -- 途径站点组成的BIT位信息, 已售站点用1表示, 未售站点用0表示. 购票时设置起点和终点-1, 终点不设置   
+);    
+3. 测试数据模型, 1趟火车, 途径14个站点.
+
+insert into train values (1, '2013-01-20', 'D645', array['上海南','嘉兴','杭州南','诸暨','义乌','金华','衢州','上饶','鹰潭','新余','宜春','萍乡','株洲','长沙']);  
+
+4. 插入测试数据, 共计200W个车厢或bucket, 每个车厢98个位置.
+
+insert into train_sit values (id, 1, id, '一等座', generate_series(1,98), repeat('0',14)::varbit) from generate_series(1,1000000) t(id);    
+insert into train_sit values (id, 1, id, '二等座', generate_series(1,98), repeat('0',98)::varbit) from generate_series(1000001,2000000) t(id);    
+创建取数组中元素位置的函数 (实际生产时可以使用C实现) :
+create or replace function array_pos (a anyarray, b anyelement) returns int as $$    
+declare    
+  i int;    
+begin    
+  for i in 1..array_length(a,1) loop    
+    if b=a[i] then    
+      return i;    
+    end if;    
+    i := i+1;    
+  end loop;    
+  return null;    
+end;    
+$$ language plpgsql;  
+
+
+
+ 创建购票函数 (伪代码) :
+ 
+ create or replace function buy     
+(    
+inout i_train_num name,     
+inout i_fstation text,     
+inout i_tstation text,    
+inout i_go_date date,    
+inout i_sits int, -- 购买多少张  
+out o_slevel text,    
+out o_bucket_no int,    
+out o_sit_no int,    
+out o_order_status boolean    
+)     
+declare  
+  vid int[];  
+  
+begin  
+  
+-- 锁定席位  
+  
+open cursor for  
+select array_agg(id) into vid[] from table   
+  where column1='车次号'   -- 指定车次  
+  and column2='车次日期'   -- 指定发车日期  
+  -- and mod(pg_backend_pid(),100) = mod(pk,100)   -- 提高并发，如果有多个连接并发的在更新，可以直接分开落到不同的行，但是可能某些pID卖完了，可能会找不到票，建议不要开启这个条件  
+  and column4='席别'  -- 指定席别  
+  and getbit(column3, 开始站点位置, 结束站点位置-1) = '0...0'  -- 获取起始位置的BIT位，要求全部为0  
+  order by column3 desc   -- 这个目的是先把已经卖了散票的的座位拿来卖，也符合铁大哥的思想，尽量把起点和重点的票卖出去，减少空洞  
+  for update  
+  skip locked  -- 跳过被锁的行，老牛逼了，不需要锁等待  
+  limit ?;     -- 要买几张票  
+  
+  if array_lengty(vid,1)=? then  -- 确保锁定行数与实际需要购票的数量一致   
+  
+    -- 购票，更新席别，设置对应BIT=1  
+    update ... set column3=set_bit(column3, 1, 开始位置, 结束位置) where id = any(vid);  
+  end if;  
+  
+end;  
+$$ language plpgsql; 
+create or replace function buy   
+(  
+inout i_train_num name,   
+inout i_fstation text,   
+inout i_tstation text,  
+inout i_go_date date,  
+out o_slevel text,  
+out o_bucket_no int,  
+out o_sit_no int,  
+out o_order_status boolean  
+)   
+returns record as $$  
+declare  
+  curs1 refcursor;  
+  curs2 refcursor;  
+  v_row int;  
+  v_station text[];  
+  v_train_id int;  
+  v_train_bucket_id int;  
+  v_train_sit_id int;  
+  v_from_station_idx int;  
+  v_to_station_idx int;  
+  v_station_len int;  
+begin  
+  set enable_seqscan=off;  
+  v_row := 0;  
+  o_order_status := false;  
+    
+  select array_length(station,1), station, id, array_pos(station, i_fstation), array_pos(station, i_tstation)   
+    into v_station_len, v_station, v_train_id, v_from_station_idx, v_to_station_idx   
+    from train where train_num=i_train_num and go_date = i_go_date;  
+  if ( found and array_pos(v_station, i_fstation) is not null   
+       and array_pos(v_station, i_tstation) is not null   
+       and array_pos(v_station, i_fstation) < array_pos(v_station, i_tstation)   
+     ) then  
+  else  
+    o_order_status := false;  
+    return;  
+  end if;  
+    
+  open curs2 for select tid,tbid,sit_no from train_sit  
+    where (station_bit & bitsetvarbit(repeat('0', v_station_len-1)::varbit, v_from_station_idx-1, v_to_station_idx-v_from_station_idx, 1)) = repeat('0', v_station_len-1)::varbit   
+    and station_bit <> repeat('1', v_station_len-1)::varbit  
+    -- and ctid not in (select locked_row from pgrowlocks('train_sit')) -- 耗时约300毫秒, 用它来解决热点锁等待不划算.  
+    limit 1  
+    for update nowait; -- 也可不加nowait, 加了的话如果获取锁失败将返回55P03异常, 需要程序重新提交  
+  loop  
+    fetch curs2 into v_train_id,v_train_bucket_id,o_sit_no;  
+    if found then  
+      update train_sit set station_bit=bitsetvarbit(station_bit, v_from_station_idx-1, v_to_station_idx-v_from_station_idx, 1)   
+        where current of curs2;  
+      GET DIAGNOSTICS v_row = ROW_COUNT;  
+      if (v_row = 1) then  
+        select sit_level, bno into o_slevel, o_bucket_no from train_bucket where id=v_train_bucket_id;  
+ close curs2;  
+ o_order_status := true;  
+ return;  
+      end if;  
+    else   
+      close curs2;  
+      exit;  
+    end if;  
+  end loop;  
+  
+  v_row := 0;  
+  
+  open curs1 for select id, tid, strpos(sit_bit::text,'0'), sit_level, bno from train_bucket   
+    where sit_remain>0  
+    -- and ctid not in (select locked_row from pgrowlocks('train_bucket')) -- 耗时约300毫秒, 用它来解决热点锁等待不划算.  
+    limit 1   
+    for update nowait; -- 也可不加nowait, 加了的话如果获取锁失败将返回55P03异常, 需要程序重新提交.  
+  loop  
+    fetch curs1 into v_train_bucket_id, v_train_id, o_sit_no, o_slevel, o_bucket_no;  
+    if found then  
+      update train_bucket set sit_bit = set_bit(sit_bit, strpos(sit_bit::text,'0')-1, 1), sit_remain = sit_remain-1  
+        where current of curs1;  
+      GET DIAGNOSTICS v_row = ROW_COUNT;  
+      if (v_row = 1) then  
+        close curs1;  
+ exit;  
+      end if;  
+    else   
+      close curs1;  
+      exit;  
+    end if;  
+  end loop;  
+  
+  if v_row = 1 then  
+    insert into train_sit(tid,tbid,sit_no,station_bit)  
+    values (  
+      v_train_id,   
+      v_train_bucket_id,   
+      o_sit_no,  
+      bitsetvarbit(repeat('0', v_station_len-1)::varbit, v_from_station_idx-1, v_to_station_idx-v_from_station_idx, 1)  
+      );  
+    o_order_status := true;  
+    return;  
+  else  
+    o_order_status := false;  
+    return;  
+  end if;  
+    
+  exception   
+  when others then  
+    o_order_status := false;  
+    return;  
+end;  
+$$ language plpgsql;  
+测试
+ select * from buy('D645','杭州南','宜春','2013-01-20');  
+
+
+
+
