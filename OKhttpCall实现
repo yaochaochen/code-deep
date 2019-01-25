@@ -1,0 +1,92 @@
+
+
+Call是一个接口代码如下：
+
+package okhttp3;
+
+import java.io.IOException;
+
+public interface Call {
+
+  Request request();
+
+  Response execute() throws IOException;
+
+  void enqueue(Callback responseCallback);
+
+  void cancel();
+
+  boolean isExecuted();
+
+  boolean isCanceled();
+
+  interface Factory {
+    Call newCall(Request request);
+  }
+}
+因此OkHttpClient需要给我们返回一个Call接口的实现类，点击去看一下，代码如下：
+
+/**
+   * Prepares the {@code request} to be executed at some point in the future.
+   */
+  @Override public Call newCall(Request request) {
+    return new RealCall(this, request);
+  }
+1
+2
+3
+4
+5
+6
+可以发现，其实返回的是RealCall对象。
+
+接下来在Activity中调用Call.enqueue(Callback)方法，点进去之后代码如下： 
+
+在enqueue一参的方法中又调用了2参数的方法，并将第二个参数forWebSocket置为了false.
+
+而在2参数的enqueue方法中，我们发现最终调用了client.dispatcher.enqueue的方法，并且将Callback和forWebSocket两个参数封装到了一个叫做AsyncCall的对象当中.
+
+这个dispatcher就是OkHttpClient中的一个全局变量，点进去查看如下：
+
+synchronized void enqueue(AsyncCall call) {
+    if (runningAsyncCalls.size() < maxRequests && runningCallsForHost(call) < maxRequestsPerHost) {
+      runningAsyncCalls.add(call);
+      executorService().execute(call);
+    } else {
+      readyAsyncCalls.add(call);
+    }
+  }
+Dispatcher内部是过一个线程池来执行，超过最大请求数后则先加入准备请求的队列中，对于这个线程池后续会单独用一篇博客来讲解，此时我们主要来整理一下整个请求流程，因此不做过多解释。 以上代码会执行到if代码块，然后执行executorService().execute(call); 看到这对于线程池有了解的同学应该能立马想到AsyncCall其实就是一个Runnable对象，我们点进AsyncCall代码中可以看到它就是继承了NamedRunnable，而NamedRunnable又实现了Runnable接口并且在run方法中主动调用了execute的方法，如下所示： 
+
+
+而这个抽象的execute方法在AsyncCall中已经被实现，如下所示：
+
+
+
+由上图可以看到，当执行一个AsyncCall的execute方法时，会调用一个叫做getResponseWithInterceptorChain的方法，并返回Response对象，然后通过接口回调的方式将此Response返回给我们在Activity中所实现的Callback接口并刷新UI。
+
+那这个getResponseWithInterceptorChain内部又是如何工作的呢？？其实这个方法中的源码很简单，如下所示： 
+
+
+创建了一个ApplicationInterceptorChain对象，然后调用其proceed方法进行，接下来看一下ApplicationInterceptorChain的proceed代码如下
+
+
+
+在proceed方法中，判断如果index小于OkHttpClient中拦截器集合的个数，则会递归创建新的ApplicationInterceptorChain对象，并将这个新的ApplicationInterceptorChain对象那个传递给index下标的拦截器的intercept方法
+
+注意：此处有一个亮点，如果我们想自己实现Intercept一定要在intercept方法中主动调用chain.proceed方法，这样整个递归循环才能顺利的执行下去，反过来说我们也可以在某一个拦截器中将网络请求进行拦截，做法就是只要在拦截器中不调用proceed方法即可
+对于拦截器的作用以及原理我会在后续章节中单独分析
+
+
+但是在这个递归循环中，最终index都会处于一个>=client.interceptors.size的阶段，因此最终会调用最后一行代码getResponse(request, forWebSocket)方法。这个方法是真正的发送网络请求并获取Response的方法,其内部代码如下所示：
+
+
+
+如图所示，在getResponse方法中创建了一个HttpEngine的对象，然后分别调用HttpEngine的sendRequest和readResponse方法，这两个方法依次是发送网络请求和读取网络请求结果，最后将Response对象返回到之前说的getResponseWithInterceptorChain方法，并回传给Activity中的Callback
+
+对于HttpEngine内部实现后续会单独再做分析。
+
+
+
+
+
