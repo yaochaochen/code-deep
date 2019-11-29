@@ -118,7 +118,7 @@ ORDER BY
 	reception_count DESC
 ```
 ##按照站厅和时间维度统计
-``` SELECT
+```sql SELECT
 	sum(DD.new_fans) AS new_fans,
 	sum(dd.old_fans) AS old_fans,
 	dd.hall_name,
