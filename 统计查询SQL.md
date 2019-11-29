@@ -118,5 +118,40 @@ ORDER BY
 	reception_count DESC
 ```
 
-
+SELECT
+	sum(DD.new_fans) AS new_fans,
+	sum(dd.old_fans) AS old_fans,
+	dd.hall_name,
+	dd.create_date AS create_time
+FROM (
+	SELECT
+		count(1) AS new_fans,
+		'0' AS old_fans,
+		hall_name,
+		to_char(create_time, 'yyyy-MM-dd') AS create_date
+	FROM
+		hall_attention
+	WHERE
+		"event" = 0
+	GROUP BY
+		hall_name,
+		create_date
+	UNION
+	SELECT
+		'0' AS new_fans,
+		count(1) AS old_fans,
+		hall_name,
+		to_char(create_time, 'yyyy-MM-dd') AS create_date
+	FROM
+		hall_attention
+	WHERE
+		event = 1
+	GROUP BY
+		hall_name,
+		create_date) AS dd
+GROUP BY
+	dd.hall_name,
+	dd.create_date
+ORDER BY
+	dd.create_date DESC
 
