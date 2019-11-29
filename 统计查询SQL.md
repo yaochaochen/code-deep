@@ -59,7 +59,8 @@ COALESCE列为空赋值0.00
 
 
 
-SELECT
+```sql
+ SELECT
 	region_. "name" AS area_name,
 	region1_. "name" AS station_name,
 	hall_. "name" AS hall_name,
@@ -115,3 +116,7 @@ GROUP BY
 	hall_.seat_count
 ORDER BY
 	reception_count DESC
+```
+
+
+
