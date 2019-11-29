@@ -53,7 +53,7 @@ GROUP BY
 LIMIT 10 OFFSET 0
 ```
 
-统计站厅销售金额
+## 统计站厅销售金额
 
 COALESCE列为空赋值0.00
 
@@ -117,7 +117,7 @@ GROUP BY
 ORDER BY
 	reception_count DESC
 ```
-##按照站厅和时间维度统计
+## 按照站厅和时间维度统计
 ```sql SELECT
 	sum(DD.new_fans) AS new_fans,
 	sum(dd.old_fans) AS old_fans,
