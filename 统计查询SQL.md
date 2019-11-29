@@ -56,3 +56,62 @@ LIMIT 10 OFFSET 0
 统计站厅销售金额
 
 COALESCE列为空赋值0.00
+
+
+
+SELECT
+	region_. "name" AS area_name,
+	region1_. "name" AS station_name,
+	hall_. "name" AS hall_name,
+	hall_.hall_type AS hall_type,
+	hall_.use_area AS use_area,
+	hall_.seat_count AS seat_count,
+	COUNT(order_info_) AS reception_count,
+	SUM(
+		CASE WHEN order_info_.svc_source_name = '扫码接待' THEN
+			1
+		ELSE
+			0
+		END) AS reception_scan_count,
+	SUM(
+		CASE WHEN order_info_.svc_source_name = '商务票' THEN
+			1
+		ELSE
+			0
+		END) AS reception_business_count,
+	SUM(
+		CASE WHEN order_info_.svc_source_name = '会员' THEN
+			1
+		ELSE
+			0
+		END) AS reception_member_count,
+	SUM(
+		CASE WHEN order_info_.svc_source_name = '散客' THEN
+			1
+		ELSE
+			0
+		END) AS reception_individual_count,
+	SUM(
+		CASE WHEN order_info_.svc_source_name NOT IN('散客', '会员', '商务票', '扫码接待') THEN
+			1
+		ELSE
+			0
+		END) AS reception_company_count
+FROM
+	hall hall_
+	LEFT OUTER JOIN region region_ ON SUBSTRING(hall_.region_long_code, 1, 8) = region_.long_code
+	LEFT OUTER JOIN region region1_ ON hall_.region_long_code = region1_.long_code
+	LEFT OUTER JOIN svc_order order_info_ ON order_info_.recept_hall_code = hall_.code
+		AND order_info_.svc_status != 5
+WHERE
+	1 = 1
+GROUP BY
+	region_. "name",
+	region1_. "name",
+	hall_. "name",
+	hall_.hall_type,
+	hall_.use_area,
+	hall_.use_area,
+	hall_.seat_count
+ORDER BY
+	reception_count DESC
