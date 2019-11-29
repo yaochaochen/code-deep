@@ -117,8 +117,8 @@ GROUP BY
 ORDER BY
 	reception_count DESC
 ```
-
-SELECT
+##按照站厅和时间维度统计
+``` SELECT
 	sum(DD.new_fans) AS new_fans,
 	sum(dd.old_fans) AS old_fans,
 	dd.hall_name,
@@ -153,5 +153,5 @@ GROUP BY
 	dd.hall_name,
 	dd.create_date
 ORDER BY
-	dd.create_date DESC
+	dd.create_date DESC ```
 
