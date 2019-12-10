@@ -280,40 +280,65 @@ E transfer(E e, boolean timed, long nanos) {
      *    is essentially the same as for fulfilling, except
      *    that it doesn't return the item.
      */
-
+		//
     SNode s = null; // constructed/reused as needed
+  //e为空 说明 take 方法 不为空则是 put 方法
     int mode = (e == null) ? REQUEST : DATA;
-
+	/// 自旋
     for (;;) {
+      //拿出节点，
+      //1.头节点为空，说明队列中没有有数据
+      //2. 头节点不为空，并且 take 类型的， 说明 头节点线程正在拿数据
+      //3. 头节点不为空 并且 put 类型的， 说明 头节点线程正在放数据
         SNode h = head;
+      //栈头为空 说明队列中没有数据
+      //栈头不为空，并且栈头类型和本次操作一样 那么就把put操作放在该栈头的 前面即可
         if (h == null || h.mode == mode) {  // empty or same-mode
+          //设置的超间，并且 e 进栈或者出栈要超时了
+          //就会丢弃本次操作， 返回null 
+          //如果栈头此时被取消了 丢弃栈头 取下一个节点继续消费
             if (timed && nanos <= 0) {      // can't wait
-                if (h != null && h.isCancelled())
+              //栈头被取消 
+              if (h != null && h.isCancelled())
+                //丢弃栈头
                     casHead(h, h.next);     // pop cancelled node
                 else
                     return null;
+              //
             } else if (casHead(h, s = snode(s, e, h, mode))) {
                 SNode m = awaitFulfill(s, timed, nanos);
                 if (m == s) {               // wait was cancelled
-                    clean(s);
+                  //第一个元素作为栈头 
+                  clean(s);
+                  //返回null
                     return null;
                 }
+              //把新数据作为栈头
                 if ((h = head) != null && h.next == s)
                     casHead(h, s.next);     // help s's fulfiller
                 return (E) ((mode == REQUEST) ? m.item : s.item);
             }
+          //栈头正在等待其他线程 put或者 take
+          //比如栈头正在阻塞 
         } else if (!isFulfilling(h.mode)) { // try to fulfill
-            if (h.isCancelled())            // already cancelled
+            //栈头被取消 把下一个元素当做栈头
+              if (h.isCancelled())            // already cancelled
                 casHead(h, h.next);         // pop and retry
+          //
             else if (casHead(h, s=snode(s, e, h, FULFILLING|mode))) {
                 for (;;) { // loop until matched or waiters disappear
-                    SNode m = s.next;       // m is s's match
+                  //m 就是栈头  
+                  SNode m = s.next;       // m is s's match
                     if (m == null) {        // all waiters are gone
-                        casHead(s, null);   // pop fulfill node
+                      //栈头为空 返回null
+                      casHead(s, null);   // pop fulfill node
                         s = null;           // use new node next time
                         break;              // restart main loop
                     }
                     SNode mn = m.next;
+                  	//tryMatch 非常重要的方法，2中作用
+                  	//1唤醒被阻塞的栈头 就能从m.match中得到本次操作 s
+                  	//其中 s.item 记录着本次的操作节点 本次的操作记录
                     if (m.tryMatch(s)) {
                         casHead(s, mn);     // pop both s and m
                         return (E) ((mode == REQUEST) ? m.item : s.item);
@@ -337,3 +362,205 @@ E transfer(E e, boolean timed, long nanos) {
 }
 ```
 
+这个方法相对比较复杂，但是从源码上可以看出来一下几点
+
+1. 判断 put take 的方法
+
+2. 判断栈头数据是否为空 如果为空或者栈头的操作和本次操作一致
+
+3. 判断作为无设置超时时间 如果设置了并且已经超时 返回 null 
+
+4. 如果栈头为空 把当前操作设置栈头或者栈头不为 null 但栈头的操作和本次操作相同
+
+   也把当前操作设置为栈头，并且看其他线程是否满足自己，不能满足则阻塞自己 
+
+5. 如果栈头已经被阻塞 需要别人唤醒 判当前操作能否唤醒栈头
+6. 把自己当做节点赋值到栈头的 match 属性上并且唤醒栈头节点
+7. 栈头被唤醒后，拿着 match 属性就把自己唤醒的节点的信息 返回
+
+在上述方法内有个至为重要的方法 **awaitFulfill** 节点阻塞 实现原理如下
+
+```java
+SNode awaitFulfill(SNode s, boolean timed, long nanos) {
+    /*
+     * When a node/thread is about to block, it sets its waiter
+     * field and then rechecks state at least one more time
+     * before actually parking, thus covering race vs
+     * fulfiller noticing that waiter is non-null so should be
+     * woken.
+     *
+     * When invoked by nodes that appear at the point of call
+     * to be at the head of the stack, calls to park are
+     * preceded by spins to avoid blocking when producers and
+     * consumers are arriving very close in time.  This can
+     * happen enough to bother only on multiprocessors.
+     *
+     * The order of checks for returning out of main loop
+     * reflects fact that interrupts have precedence over
+     * normal returns, which have precedence over
+     * timeouts. (So, on timeout, one last check for match is
+     * done before giving up.) Except that calls from untimed
+     * SynchronousQueue.{poll/offer} don't check interrupts
+     * and don't wait at all, so are trapped in transfer
+     * method rather than calling awaitFulfill.
+     */
+  	//死亡时间 当前时间 + 超时时间 否则就是0
+    final long deadline = timed ? System.nanoTime() + nanos : 0L;
+    Thread w = Thread.currentThread();
+  //自旋次数 如果设置超时时间会自旋32次 否则自旋512次
+  //比如这次操作是  take 操作 自旋次数后 仍然没有其他线程 put 数据进去
+  //就会被阻塞 有超时时间的 会阻塞固定时间，否则一直阻塞
+    int spins = (shouldSpin(s) ?
+                 (timed ? maxTimedSpins : maxUntimedSpins) : 0);
+    for (;;) {
+      //当前线程有无被打断 
+        if (w.isInterrupted())
+            s.tryCancel();
+        SNode m = s.match;
+        if (m != null)
+            return m;
+        if (timed) {
+            nanos = deadline - System.nanoTime();
+          //超时了取消当前线程等待
+            if (nanos <= 0L) {
+                s.tryCancel();
+                continue;
+            }
+        }
+      //自旋次数减1
+        if (spins > 0)
+            spins = shouldSpin(s) ? (spins-1) : 0;
+      //把当前设置 waiter 通过线程来完成阻塞和唤醒
+        else if (s.waiter == null)
+            s.waiter = w; // establish waiter so can park next iter
+        else if (!timed)
+          //通过 park 进行阻塞
+            LockSupport.park(this);
+        else if (nanos > spinForTimeoutThreshold)
+            LockSupport.parkNanos(this, nanos);
+    }
+}
+```
+
+**从阻塞方法上看到 其实所谓的阻塞并不会一上来就被阻塞， 而是通过自旋一定次数 仍然没有满足要求 才会真正的被阻塞**
+
+
+
+## 公平的队列
+
+```java
+/** 队列头 */
+transient volatile QNode head;
+/** 队列尾 */
+transient volatile QNode tail;
+
+// 队列的元素
+static final class QNode {
+    // 当前元素的下一个元素
+    volatile QNode next;         
+    // 当前元素的值，如果当前元素被阻塞住了，等其他线程来唤醒自己时，其他线程
+    // 会把自己 set 到 item 里面
+    volatile Object item;         // CAS'ed to or from null
+    // 可以阻塞住的当前线程
+    volatile Thread waiter;       // to control park/unpark
+    // true 是 put，false 是 take
+    final boolean isData;
+} 
+```
+
+公平的队列主要使用 TransferQueue 内部类的 transfer 方法实现的，源码如下
+
+```java
+E transfer(E e, boolean timed, long nanos) {
+
+    QNode s = null; // constructed/reused as needed
+    // true 是 put，false 是 get
+    boolean isData = (e != null);
+
+    for (;;) {
+        // 队列头和尾的临时变量,队列是空的时候，t=h
+        QNode t = tail;
+        QNode h = head;
+        // tail 和 head 没有初始化时，无限循环
+        // 虽然这种 continue 非常耗cpu，但感觉不会碰到这种情况
+        // 因为 tail 和 head 在 TransferQueue 初始化的时候，就已经被赋值空节点了
+        if (t == null || h == null)
+            continue;
+        // 首尾节点相同，说明是空队列
+        // 或者尾节点的操作和当前节点操作一致
+        if (h == t || t.isData == isData) {
+            QNode tn = t.next;
+            // 当 t 不是 tail 时，说明 tail 已经被修改过了
+            // 因为 tail 没有被修改的情况下，t 和 tail 必然相等
+            // 因为前面刚刚执行赋值操作： t = tail
+            if (t != tail)
+                continue;
+            // 队尾后面的值还不为空，t 还不是队尾，直接把 tn 赋值给 t，这是一步加强校验。
+            if (tn != null) {
+                advanceTail(t, tn);
+                continue;
+            }
+            //超时直接返回 null
+            if (timed && nanos <= 0)        // can't wait
+                return null;
+            //构造node节点
+            if (s == null)
+                s = new QNode(e, isData);
+            //如果把 e 放到队尾失败，继续递归放进去
+            if (!t.casNext(null, s))        // failed to link in
+                continue;
+
+            advanceTail(t, s);              // swing tail and wait
+            // 阻塞住自己
+            Object x = awaitFulfill(s, e, timed, nanos);
+            if (x == s) {                   // wait was cancelled
+                clean(t, s);
+                return null;
+            }
+
+            if (!s.isOffList()) {           // not already unlinked
+                advanceHead(t, s);          // unlink if head
+                if (x != null)              // and forget fields
+                    s.item = s;
+                s.waiter = null;
+            }
+            return (x != null) ? (E)x : e;
+        // 队列不为空，并且当前操作和队尾不一致
+        // 也就是说当前操作是队尾是对应的操作
+        // 比如说队尾是因为 take 被阻塞的，那么当前操作必然是 put
+        } else {                            // complementary-mode
+            // 如果是第一次执行，此处的 m 代表就是 tail
+            // 也就是这行代码体现出队列的公平，每次操作时，从头开始按照顺序进行操作
+            QNode m = h.next;               // node to fulfill
+            if (t != tail || m == null || h != head)
+                continue;                   // inconsistent read
+
+            Object x = m.item;
+            if (isData == (x != null) ||    // m already fulfilled
+                x == m ||                   // m cancelled
+                // m 代表栈头
+                // 这里把当前的操作值赋值给阻塞住的 m 的 item 属性
+                // 这样 m 被释放时，就可得到此次操作的值
+                !m.casItem(x, e)) {         // lost CAS
+                advanceHead(h, m);          // dequeue and retry
+                continue;
+            }
+            // 当前操作放到队头
+            advanceHead(h, m);              // successfully fulfilled
+            // 释放队头阻塞节点
+            LockSupport.unpark(m.waiter);
+            return (x != null) ? (E)x : e;
+        }
+    }
+}
+```
+
+源码比较复杂，线程被阻塞后 当前线程是如何把自己的数据传给阻塞线程的 假设线程1 往队列中 take 数据 被阻塞了 变成阻塞线程A 然后线程2开始往队列里 put B
+
+1. 线程1从队列中拿到数据 发现队列中没有数据 于是被阻塞 成为A
+2. 线程2往队尾 put 放数据 会从队尾往前找到第一个阻塞的节点 假设此时能找到的就是节点A然后线程B将 put数据放到节点A的item属性里面 并唤醒线程1
+3. 线程1被唤醒就从 A.item 里拿到线程2 put 的数据了 线程1成功返回
+
+## 总结
+
+SynchrononsQueue是非常难的 源码也很难理解~~~~
