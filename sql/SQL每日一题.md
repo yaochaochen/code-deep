@@ -35,3 +35,30 @@ from Logs t1 left join Logs t2 on t1.id + 1 = t2.id group by t1.num
 
 ------
 
+## 2019-12-13
+
+**有如下一张记录表，如何查询出每隔15分钟的记录数**
+
+| ID   | Times            |
+| ---- | ---------------- |
+| 1    | 2019/12/13 11:01 |
+| 2    | 2019/12/13 11:03 |
+| 3    | 2019/12/13 11:05 |
+| 4    | 2019/12/13 11:09 |
+| 5    | 2019/12/13 11:17 |
+| 6    | 2019/12/13 11:19 |
+| 7    | 2019/12/13 11:29 |
+| 8    | 2019/12/13 11:37 |
+
+**预计结果**
+
+| 时间段           | 行数 |
+| ---------------- | ---- |
+| 2019/12/13 11:00 | 4    |
+| 2019/12/13 11:15 | 3    |
+| 2019/12/13 11:30 | 1    |
+
+```sql
+select hours||':'||times as times, count(1) as rows from ( select split_part(times,':',1) as hours , case when split_part(times,':',2) < 15 then '00' when split_part(times,':',2) < 30 then '15' when split_part(times,':',2) < 45 then '30' else '45' end as times from tmp.table_time ) t1 group by 1 ;
+```
+
