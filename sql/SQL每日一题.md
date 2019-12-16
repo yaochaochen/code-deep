@@ -62,3 +62,45 @@ from Logs t1 left join Logs t2 on t1.id + 1 = t2.id group by t1.num
 select hours||':'||times as times, count(1) as rows from ( select split_part(times,':',1) as hours , case when split_part(times,':',2) < 15 then '00' when split_part(times,':',2) < 30 then '15' when split_part(times,':',2) < 45 then '30' else '45' end as times from tmp.table_time ) t1 group by 1 ;
 ```
 
+------
+
+## 2019-12-16
+
+几个朋友来到电影院的售票处，准备预约连续空余座位。
+
+你能利用表 cinema ，帮他们写一个查询语句，获取所有空余座位，并将它们按照 seat_id 排序后返回吗？
+
+| seat_id | free |
+| ------- | ---- |
+| 1       | 1    |
+| 2       | 0    |
+| 3       | 1    |
+| 4       | 1    |
+| 5       | 1    |
+
+对于如上样例，你的查询语句应该返回如下结果。
+
+| seat_id |
+| ------- |
+| 3       |
+| 4       |
+| 5       |
+
+注意：
+seat_id 字段是一个自增的整数，free 字段是布尔类型（'1' 表示空余， '0' 表示已被占据）。
+连续空余座位的定义是大于等于 2 个连续空余的座位。
+
+```sql
+SELECT 
+	DISTINCT c1.seat_id
+FROM 
+	cinema c1
+LEFT JOIN 
+	cinema c2
+ON 
+	abs(c1.seat_id - c2.seat_id) = 1
+WHERE 
+	c1.free = 1 AND c2.free = 1
+ORDER BY c1.seat_id;
+```
+
