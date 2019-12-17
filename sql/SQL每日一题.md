@@ -129,6 +129,6 @@ ORDER BY c1.seat_id;
 | ccc  | 11   | Y    |
 
 ```sql
-
+ select a,b,c from (select a , sum(b) over(partition by a) as b , case when lag(c,1) over(partition by a order by b) = c then c else '1' end as c , row_number() over(partition by a order by b desc) as rank_num from tmp.table1 ) t1 where t1.rank_num = 1 ;
 ```
 
