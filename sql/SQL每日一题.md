@@ -1,3 +1,5 @@
+------
+
 # SQL每日一题
 
 ## 2019-12-12
@@ -130,5 +132,45 @@ ORDER BY c1.seat_id;
 
 ```sql
  select a,b,c from (select a , sum(b) over(partition by a) as b , case when lag(c,1) over(partition by a order by b) = c then c else '1' end as c , row_number() over(partition by a order by b desc) as rank_num from tmp.table1 ) t1 where t1.rank_num = 1 ;
+```
+
+------
+
+## 2019-12-18
+
+有如下两张表:
+
+Project 表
+
+| project_id | employee_id |
+| ---------- | ----------- |
+| 1          | 1           |
+| 1          | 2           |
+| 1          | 3           |
+| 2          | 1           |
+| 2          | 4           |
+
+Employee表:
+
+| employee_id | Name   | Experience_years |
+| ----------- | ------ | ---------------- |
+| 1           | Khaled | 3                |
+| 2           | Ali    | 2                |
+| 3           | John   | 3                |
+| 4           | Doe    | 2                |
+
+查询出每个项目中经验最丰富(experience_years最大)的员工
+
+| project_id | employee_id |
+| ---------- | ----------- |
+| 1          | 1           |
+| 1          | 3           |
+| 2          | 1           |
+
+说明：员工1和3是project_id为1中exprerience_years最丰富的,
+而project_id为2的项目，员工id为1的是exprerience_years最丰富
+
+```sql
+select project_id , employee_id from (select t1.project_id , t1.employee_id , t2.experience_years , rank() over(partition by t1.project_id order by t2.experience_years desc) as rank_num from tmp.table_project t1 join tmp.table_employee t2 on t1.employee_id = t2.employee_id ) a where a.rank_num = 1
 ```
 
