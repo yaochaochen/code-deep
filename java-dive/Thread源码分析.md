@@ -1,7 +1,3 @@
----
-typora-root-url: /Users/yaochaochen/work/workNote/image
----
-
 # Thread源码分析
 
 ## 类注释
@@ -24,5 +20,4 @@ typora-root-url: /Users/yaochaochen/work/workNote/image
 
 ### 线程状态
 
-![image-20191219162922185](/image-20191219162922185.png)
-
+![](../../image/image-20191219162922185.png)
