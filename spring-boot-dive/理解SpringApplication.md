@@ -121,7 +121,7 @@ private <T> Collection<T> getSpringFactoriesInstances(Class<T> type, Class<?>[] 
 
 利用 Spring 工厂加载机制，读取`SpringApplicationRunListener` 对像集合，并且封装到组合类 `SpringApplicationRunListener` 
 
-#### 运行SpringAPPlication 运行监听器 （SpringApplicationRunListener）
+#### 运行SpringAPPlication 运行监听器 （`SpringApplicationRunListener`）
 
 
 
@@ -139,4 +139,35 @@ Spring Boot 通过 `SpringApplicationRunListener` 的实现类 `EventPublishingR
   - 接口: `ApplicationEventMulticaster`
   - 实现类: `SimpleApplicationEventMulticaster`
     - 执行模式:同步/异步
-    - 
+
+### `EventPublishingRunListener` 监听方法与 Spring Boot 事件关系
+
+| 监听方法                                           | Spring Boot 事件                      | Spring Boot 起始版本 |
+| -------------------------------------------------- | ------------------------------------- | -------------------- |
+| staring()                                          | `ApplicationStartingEvent`            | 1.5                  |
+| `eveironmentPrepared(ConfigurableEnvironment)`     | `ApplicationEnvironmentPreparedEvent` | 1.0                  |
+| `contextPrepared(ConfigurableApplicationContext)`  |                                       |                      |
+| `contextLoaded(ConfigurableApplicationContext)`    | `ApplicationPreparedEvent`            | 1.0                  |
+| `started(ConfigurableApplicationContext)`          | `ApplicationStartedEvent`             | 2.0                  |
+| `running(ConfigurableApplicationContext)`          | `ApplicationReadyEvent`               | 2.0                  |
+| `failed(ConfigurableApplicationContext,Throwable)` | `ApplicationFailedEvent`              | 1.0                  |
+
+### 创建 Spring 应用上下文( `ConfigurableApplicationContext` )
+
+**根据准备阶段的推断 Web 应用类型创建对应的 ConfigurableApplicationContext 实例:**
+
+- Web Reactive: `AnnotationConfigReactiveWebServerApplicationContext` 
+
+- Web Servlet: `AnnotationConfigServletWebServerApplicationContext` 
+
+- 非 Web: `AnnotationConfigApplicationContext`
+
+#### 创建 Environment
+
+ **根据准备阶段的推断 Web 应用类型创建对应的 ConfigurableEnvironment 实例:**
+
+- Web Reactive: `StandardEnvironment`
+  Web Servlet: `StandardServletEnvironment` 
+
+- 非 Web: `StandardEnvironment`
+
