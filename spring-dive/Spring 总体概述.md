@@ -52,6 +52,22 @@
 - Spring MVC 测试（Spring MVC Test）
 - Web 测试客户端（WebTestClient）
 
+## Java 语法变化
+
+- 5（2004）
+  - 枚举、泛型、注解、封箱/拆箱等
+
+- 6（2006）
+  - `@Override` 接口
+- 7（2011）
+  - Diamond 语法、多Catch、Try
+- 8（2017）
+  - Lambda语法、可重复注解、类型注解...
+- 9（2017）
+  - 模块化、接口私有化方法...
+- 10（2018）
+  - 局部变量类型推断
+
 ## Java 版本依赖于支持
 
 | Spring Framework 版本 | Java标准版本 | Java 企业版本    |
