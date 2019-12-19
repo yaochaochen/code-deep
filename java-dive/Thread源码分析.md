@@ -277,7 +277,7 @@ public void  joinDemo() throws InterruptedException {
 
 执行的结果，就是主线程在执行 Thread.join() 代码后会停止，会等待子线程沉睡30秒后再执行，这里的join的作用就是让主线程等待子线程执行完成。
 
-![](../../image/image-20191219190319721-1.png)
+![](../image/image-20191219190319721-1.png)
 
 ### yield
 
