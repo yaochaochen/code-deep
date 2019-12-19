@@ -263,7 +263,7 @@ public void  joinDemo() throws InterruptedException {
         public void run() {
             System.out.printf("子线程{%d}", Thread.currentThread().getName());
         try {
-            Thread.sleep(1000);
+            Thread.sleep(3000);
         }catch (Exception e) {
 
         }
@@ -275,3 +275,12 @@ public void  joinDemo() throws InterruptedException {
 }
 ```
 
+执行的结果，就是主线程在执行 Thread.join() 代码后会停止，会等待子线程沉睡30秒后再执行，这里的join的作用就是让主线程等待子线程执行完成。
+
+![](../../image/image-20191219190319721-1.png)
+
+### yield
+
+yield是个native方法
+
+意思是当前线程做出让步，放弃当前CPU 让出CPU重新选择线程，避免线程过度使用CPU 我们写 while 死循环的时候，预计短时间内while死循环可以结束的话，可以在循环使用 yield 方法，防止CPU一直被while死循环霸占。
