@@ -202,4 +202,3 @@ ActorDirector
  select action_id , director_id from tmp.actordirector group by 1,2 having count(1)>=3 	
 ```
 
-s
