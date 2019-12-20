@@ -174,3 +174,32 @@ Employee表:
 select project_id , employee_id from (select t1.project_id , t1.employee_id , t2.experience_years , rank() over(partition by t1.project_id order by t2.experience_years desc) as rank_num from tmp.table_project t1 join tmp.table_employee t2 on t1.employee_id = t2.employee_id ) a where a.rank_num = 1
 ```
 
+## 2019-11-20
+
+如下一张表
+
+ActorDirector
+
+| actor_id | director_id | timestamp |
+| -------- | ----------- | --------- |
+| 1        | 1           | 0         |
+| 1        | 1           | 1         |
+| 1        | 1           | 2         |
+| 1        | 2           | 3         |
+| 1        | 2           | 4         |
+| 2        | 1           | 5         |
+| 2        | 1           | 6         |
+
+写一条SQL查询语句获取合作过至少三次的演员和导演的ID对 actor_id 和 director_id
+
+结果:
+
+| actor_id | director_id |
+| -------- | ----------- |
+| 1        | 1           |
+
+```sql
+ select action_id , director_id from tmp.actordirector group by 1,2 having count(1)>=3 	
+```
+
+s
