@@ -174,7 +174,7 @@ Employee表:
 select project_id , employee_id from (select t1.project_id , t1.employee_id , t2.experience_years , rank() over(partition by t1.project_id order by t2.experience_years desc) as rank_num from tmp.table_project t1 join tmp.table_employee t2 on t1.employee_id = t2.employee_id ) a where a.rank_num = 1
 ```
 
-## 2019-11-20
+## 2019-12-20
 
 如下一张表
 
@@ -200,5 +200,31 @@ ActorDirector
 
 ```sql
  select action_id , director_id from tmp.actordirector group by 1,2 having count(1)>=3 	
+```
+
+## 2019-12-23
+
+你能写一个 SQL 查询语句，找到只出现过一次的数字中，最大的一个数字吗？下面是测试数据
+
+| Num  |
+| ---- |
+| 8    |
+| 8    |
+| 3    |
+| 3    |
+| 1    |
+| 4    |
+| 5    |
+| 6    |
+| 7    |
+
+对于上面给出的样例数据，你的查询语句应该返回如下结果：
+
+| Num  |
+| ---- |
+| 6    |
+
+```sql
+select max(num) as num from (select num from table1 group by num having count(1) = 1 ) t1 ;
 ```
 
