@@ -57,3 +57,69 @@ public abstract class AbstractQueuedSynchronizer
 
 AQS 的属性可以简单分为四类: **同步器简单属性**  **同步队列属性**  **条件队列属性** **公用Node**
 
+#### 简单属性
+
+首先我们来看一下简单属性有那些
+
+```java
+/**
+ * The synchronization state.
+ */
+//AQS 状态 子类会根据这个状态进行判断是否可以获得锁
+private volatile int state;
+  // Queuing utilities
+
+    /**
+     * The number of nanoseconds for which it is faster to spin
+     * rather than to use timed park. A rough estimate suffices
+     * to improve responsiveness with very short timeouts.
+     */
+		//自旋超时阈值 单位纳秒
+    static final long spinForTimeoutThreshold = 1000L;
+```
+
+重要的就是 state 属性，是 int类型，所有继承这个抽象类都是通过这个字段判断能不能获得锁，
+
+能不能释放锁。
+
+#### 同步队列属性
+
+当多个线程来请求锁时，某一个时刻有且只有一个线程能获得锁 那么剩余获取不到锁的线程，都会到同步队列中去排队阻塞自己，当有线程主动释放锁时，就会从同步队列头开始释放一个排队的线程，让线程重新去竞争锁。
+
+所以同步队列的主要作用阻塞获取不到锁的线程，并且在适当时间释放这些线程
+
+同步队列底层是双向链表，我们从源码中可以看到链表的头尾
+
+```java
+/**
+ * Head of the wait queue, lazily initialized.  Except for
+ * initialization, it is modified only via method setHead.  Note:
+ * If head exists, its waitStatus is guaranteed not to be
+ * CANCELLED.
+ */
+//同步队列的头
+private transient volatile Node head;
+
+/**
+ * Tail of the wait queue, lazily initialized.  Modified only via
+ * method enq to add new wait node.
+ */
+//同步队列的尾部
+private transient volatile Node tail;
+```
+
+#### 条件队列的属性
+
+条件队列和同步队列功能一样，管理获取不到锁的线程， 底层数据结构也是链表队列，但是条件不直接和锁打交道，但是常常和锁配合使用
+
+```java
+public class ConditionObject implements Condition, java.io.Serializable {
+    private static final long serialVersionUID = 1173984872572414699L;
+    /** First node of condition queue. */
+    private transient Node firstWaiter;
+    /** Last node of condition queue. */
+    private transient Node lastWaiter;
+```
+
+这就是所谓的条件队列 需要时直接使用，new ConditionObject() 即可。
+
