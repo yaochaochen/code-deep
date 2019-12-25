@@ -123,3 +123,9 @@ public class ConditionObject implements Condition, java.io.Serializable {
 
 这就是所谓的条件队列 需要时直接使用，new ConditionObject() 即可。
 
+`ConditionObject` 是实(现 `Condition` 接口， `Condition` 接口相当于 `Object` 的各种监控方法。比如 `Object#wait()`、 `Object#notify` 、`Object#notifyAll` 
+
+#### Node
+
+Node  非常重要，即时同步队列的节点，又是条件队列节点，在入队的时候，我们 Node 把线程包装一下，然后把 Node 放入两个队列中，我们看一下 Node 的数据结构
+
