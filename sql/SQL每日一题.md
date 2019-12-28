@@ -228,3 +228,33 @@ ActorDirector
 select max(num) as num from (select num from table1 group by num having count(1) = 1 ) t1 ;
 ```
 
+## 2019-12-27
+
+表 orders 定义如下，order_id 订单编号， customer_id  客户编码 order_date 下单时间
+
+有如下几条记录
+
+| order_id | customer_id | order_date |
+| -------- | ----------- | ---------- |
+| 1        | 1           | 20190624   |
+| 2        | 2           | 20190423   |
+| 3        | 3           | 20190321   |
+| 4        | 3           | 20190429   |
+| 5        | 4           | 20190812   |
+| 6        | 4           | 20190914   |
+
+在 orders 中找到订单数最多的客户对应的 customer_id 
+
+预计输出
+
+| customer_id |
+| ----------- |
+| 3           |
+| 4           |
+
+```sql
+select customer_id from orders group by customer_id having count(*) = (
+select count(*) from orders o group by o.customer_id order by count(*) desc
+limit 1)
+```
+
