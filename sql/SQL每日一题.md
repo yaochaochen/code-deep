@@ -309,6 +309,8 @@ SC
 |      |      |       |
 |      |      |       |
 
+查询"01 "课程比" 02 "课程成绩高的学生的信息及课程分数？
+
 ```sql
 SELECT * FROM students_score t1 WHERE NOT EXISTS (SELECT 1 FROM students_score t WHERE t1.NAME = t.NAME AND t.SCORE < 80 GROUP BY NAME )	
 ```
