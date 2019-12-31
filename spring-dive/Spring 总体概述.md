@@ -78,3 +78,12 @@
 | 4.X                   | 6+           | Java EE 6 和7    |
 | 5.X                   | 8+           | JavaEE 7         |
 
+## Spring 模块化
+
+- spring-aop 
+- spring-aspects
+- spring-context-indexer
+- spring-context-suppot
+- spring-context
+- spring-core
+- 
