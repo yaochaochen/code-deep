@@ -116,3 +116,37 @@
 
 - spring-jdbc                                                           spring-websoket
 
+## Spring 对 java 语言的运用
+
+- ### Java 5 语法特性
+
+  | 语法特性             | Spring 支持版本 | 代表实现                   |
+  | -------------------- | --------------- | -------------------------- |
+  | 注解(Annotation)     | 1.2+            | @Transactional             |
+  | 枚举(Enumeration)    | 1.2+            | Propagation                |
+  | for-each 语法        | 3.0+            | AbstractApplicationContext |
+  | 自动装箱(AutoBoxing) | 3.0+            |                            |
+  | 泛型(Generic)        | 3.0+            | AppliactionListenner       |
+
+  - ### Java 6 语法特性
+
+  | 语法特性         | Spring 支持版本 | 代表实现 |
+  | ---------------- | --------------- | -------- |
+  | 接口 `@Override` | 4.0             |          |
+
+  - ### Java 7 语法特性
+
+  | 语法特性               | Spring支持版本 | 代表实现                    |
+  | ---------------------- | -------------- | --------------------------- |
+  | Diamond语法            | 5.0+           | DefaultListableBeanFactory  |
+  | try-with-resources语法 | 5.0+           | ResourceBundleMessageSource |
+
+  ###  Java 8 语法特性
+
+  | 语法特性 | Spring支持版本 | 代表实现                     |
+  | -------- | -------------- | ---------------------------- |
+  | Lambda   | 5.0+           | PropertyEditorRegistrySuppot |
+
+  ## Spring 对 JDK API 的实现
+
+  
