@@ -153,7 +153,7 @@
 
   #####  
 
-  ##### <Java 5
+  - ##### <Java 5
 
   反射(Reflection)
 
@@ -173,7 +173,7 @@
 
   XML 处理(DOM SAX XPath XSTL)
 
-  ##### Java 6
+  - ##### Java 6
 
   JDBC 4.0(JSR 221)
 
@@ -187,7 +187,7 @@
 
   Scripting JVM(JSR 223)
 
-  ##### Java7 
+  - ##### Java7 
 
   NIO 2(JSR 203)
 
@@ -195,7 +195,7 @@
 
   Invokedynamic 字节码(JSR 292)
 
-  ##### Java 8 
+  - ##### Java 8 
 
   Stream API (JSR 335)
 
@@ -209,7 +209,7 @@
 
   JavaScript 运行时(JSR 223)
 
-  ##### Java 9
+  - ##### Java 9
 
   Reactive Streams Flow API(J.U.C)
 
