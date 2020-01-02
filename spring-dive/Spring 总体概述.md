@@ -149,4 +149,78 @@
 
   ## Spring 对 JDK API 的实现
 
+  #### JDK 核心 API
+
+  #####  
+
+  ##### <Java 5
+
+  反射(Reflection)
+
+  Java Beans
+
+  动态代理(Dynamic Proxy)
+
+  ##### Java 5
+
+  并发框架(J.U.C)
+
+  格式化(Formatter)
+
+  Java管理扩展(JMX)
+
+  Instrumentation
+
+  XML 处理(DOM SAX XPath XSTL)
+
+  ##### Java 6
+
+  JDBC 4.0(JSR 221)
+
+  JAXB 2.0(JSR 222)
+
+  可插拔注解处理API(JSR 269)
+
+  Common Annotations(JSR 250)
+
+  Java Compiler API (JSR 199)
+
+  Scripting JVM(JSR 223)
+
+  ##### Java7 
+
+  NIO 2(JSR 203)
+
+  Fork/Join框架(JSR 166)
+
+  Invokedynamic 字节码(JSR 292)
+
+  ##### Java 8 
+
+  Stream API (JSR 335)
+
+  CompletableFuture(J.U.C)
+
+  Annotation on java Types(JSR 308)
+
+  Date and Time API(JSR 310)
+
+  可重复 Annontion(JSR 337)
+
+  JavaScript 运行时(JSR 223)
+
+  ##### Java 9
+
+  Reactive Streams Flow API(J.U.C)
+
+  Process API Updates(JEP 102)
+
+  Variable Handles(JEP 227)
+
+  Method Handler(JEP 277)
+
+  Spin-Wait Hints(JEP 285)
+
+  Stack-Walking API (JEP 259)
+
   
