@@ -33,6 +33,29 @@
     - Google Guice https://github.com/google/guice
     - Spring Framework https://spring.io/projects/spring-framework
 
+## 传统 IoC 容器的实现
+
+- Java Beans 作为 IoC 容器
+- 特性
+  - 依赖查找
+  - 生命周期管理
+  - 配置元信息
+  - 事件
+  - 自定义
+  - 资源管理
+  - 持久化
+- 规范
+  - Java Beans https://docs.oracle.com/javase/8/docs/api/index.html
+  - BeanContext https://docs.oracle.com/javase/8/docs/api/index.html
+
+## 轻量级 IoC 容器
+
+- 容器管理代码
+- 快速启动
+- 容器不需要特殊的配置
+
+
+
 ## 依赖查找 VS 依赖注入
 
 - 优劣势对比
