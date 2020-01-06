@@ -16,6 +16,23 @@
   - 外部化配置
   - 托管的资源（Java Beans 或者其他资源）
 
+## IoC 容器的实现
+
+- ### 主要实现
+
+  - Java SE
+    - Java Beans
+    - Java ServiceLoader SPI 
+    - JNDI Java Naaming and Directory Interface
+  - Java EE
+    - EJB Enterprice Java Beans
+    - Servlet
+  - 开源
+    - Apache Avalon https://avalon.apache.org/closed.html
+    - PiocContainer http://picocontainer.com/
+    - Google Guice https://github.com/google/guice
+    - Spring Framework https://spring.io/projects/spring-framework
+
 ## 依赖查找 VS 依赖注入
 
 - 优劣势对比
