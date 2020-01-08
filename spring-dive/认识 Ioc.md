@@ -106,3 +106,18 @@ Advantages of Setter Injection include:
 - SPI 扩展
 - 强大的第三方整合
 - 更好的面向对象
+
+## 补充说明
+
+维基百科(https://en.wikipedia.org/wiki/Inversion_of_control#Overview)
+
+Inversion of control carries the strong connotation that the reusable code and the problem-specific code are developed independently even though they operate together in an application. [Software frameworks](https://en.wikipedia.org/wiki/Software_framework), [callbacks](https://en.wikipedia.org/wiki/Callback_(computer_programming)), [schedulers](https://en.wikipedia.org/wiki/Scheduling_(computing)), [event loops](https://en.wikipedia.org/wiki/Event_loop), [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection), and the [template method](https://en.wikipedia.org/wiki/Template_method) are examples of [design patterns](https://en.wikipedia.org/wiki/Design_pattern) that follow the inversion of control principle, although the term is most commonly used in the context of [object-oriented programming](https://en.wikipedia.org/wiki/Object-oriented_programming).
+
+Inversion of control serves the following design purposes:
+
+- To [decouple](https://en.wikipedia.org/wiki/Object_decoupling) the execution of a task from implementation.
+- To focus a module on the task it is designed for.
+- To free modules from assumptions about how other systems do what they do and instead rely on [contracts](https://en.wikipedia.org/wiki/Design_by_contract).
+- To prevent [side effects](https://en.wikipedia.org/wiki/Side_effect_(computer_science)) when replacing a module.
+
+Inversion of control is sometimes facetiously referred to as the "Hollywood Principle: Don't call us, we'll call you".

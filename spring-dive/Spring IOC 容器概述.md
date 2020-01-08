@@ -1,6 +1,6 @@
-# Spring IOC 容器概述
+# Spring IoC 容器概述
 
-## IoC包含的内容
+## IoC 包含的内容
 
 1. Spring IoC 依赖查找
 2. Spring IoC 依赖注入
@@ -23,3 +23,4 @@
 - 根据 Java 注解查找
   - 单个 Bean 对象
   - 集合 Bean 对象 
+
