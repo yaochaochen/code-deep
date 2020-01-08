@@ -15,7 +15,23 @@
 
 - 根据Bean名称查找
   - 延时查找
+  
+    ```java
+    private static void lookupLazy(BeanFactory beanFactory) {
+      ObjectFactory<User> userObjectFactory = (ObjectFactory<User>) beanFactory.getBean("objectFactory");
+      User user = userObjectFactory.getObject();
+        System.out.println("延时查找" + user);
+    }
+    ```
+  
   - 实时查找
+  
+  - ```java
+    private static void lookupRealTime(BeanFactory beanFactory) {
+        User user =  (User) beanFactory.getBean("user");
+        System.out.println("实时查找" + user);
+    }
+    ```
 - 根据 Bean 类型查找
   - 单个 Bean 对象
   - 集合 Bean 对象
