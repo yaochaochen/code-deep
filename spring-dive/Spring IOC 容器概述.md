@@ -67,4 +67,18 @@
   - 自定义 Bean
   - 容器内建 Bean 对象
   - 容器内建依赖
-
+  
+  ```java
+  ApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:/META-INF/dependency-injection-context.xml");
+  BeanFactory beanFactory = new ClassPathXmlApplicationContext("classpath:/META-INF/dependency-injection-context.xml");
+  //依赖来源-:自定义 Bean
+  UserRepository userRepository = applicationContext.getBean("userRepository", UserRepository.class);
+  System.out.println(userRepository.getUsers());
+  
+  //依赖来源二 依赖注入 内建依赖
+  System.out.println(userRepository.getObjectFactory());
+  
+  //容器内建  Bean
+  Environment environment =  beanFactory.getBean(Environment.class);
+  System.out.println(environment.toString());
+  ```
