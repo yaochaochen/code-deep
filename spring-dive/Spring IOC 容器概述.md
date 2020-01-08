@@ -32,11 +32,39 @@
         System.out.println("实时查找" + user);
     }
     ```
+  
 - 根据 Bean 类型查找
   - 单个 Bean 对象
+  
   - 集合 Bean 对象
+  
+    ```java
+    if (beanFactory instanceof ListableBeanFactory) {
+        ListableBeanFactory listableBeanFactory = (ListableBeanFactory) beanFactory;
+        Map<String, User> users = listableBeanFactory.getBeansOfType(User.class);
+        System.out.println("查找所有的 User 集合对象" + users);
+    }
+    ```
+  
+    
+  
 - 根据 Bean 名称 + 类型查找
+
 - 根据 Java 注解查找
   - 单个 Bean 对象
   - 集合 Bean 对象 
+  
+  ```java
+  if (beanFactory instanceof ListableBeanFactory) {
+      ListableBeanFactory listableBeanFactory = (ListableBeanFactory) beanFactory;
+      Map<String, User> users = (Map) listableBeanFactory.getBeansWithAnnotation(Super.class);
+      System.out.println("查找所有的被 Super 标注的集合对象" + users);
+  }
+  ```
+  
+  ## IoC 依赖来源
+  
+  - 自定义 Bean
+  - 容器内建 Bean 对象
+  - 容器内建依赖
 
