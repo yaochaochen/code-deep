@@ -82,3 +82,18 @@
   Environment environment =  beanFactory.getBean(Environment.class);
   System.out.println(environment.toString());
   ```
+
+## IoC 配置源信息
+
+- Bean 定义配置
+  - 基于 XML 文件
+  - 基于 Properties 文件
+  - 基于 Java 注解
+  - 基于 Java API
+- IoC 容器配置信息
+  - 基于 XML 问价
+  - 基于注解
+  - 基于 Java API
+- 外部化属性配置
+  - 基于 Java 注解
+
