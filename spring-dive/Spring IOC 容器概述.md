@@ -102,3 +102,14 @@
 
 
 ## Spring 应用上下文
+
+ApplicationContext 除了 IoC 容器角色，还提供了
+
+- 面向切面 （AOP）
+- 配置源信息（Configuration Metadata）
+- 资源管理（Resource）
+- 事件（Events）
+- 国际化（i18n）
+- 注解（Annotations）
+- Enviroment抽象
+

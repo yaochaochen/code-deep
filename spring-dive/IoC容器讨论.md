@@ -1,9 +1,8 @@
 # Spring IoC 容器
 
-- BeanFactory 和ApplicationContext 谁才是 Spring IoC容器？
+## BeanFactory 和ApplicationContext 谁才是 Spring IoC容器？
 
-  **AppliactionContext 就是 BeanFactory在官方文档里可以找出答案**
-
+**AppliactionContext 就是 BeanFactory在官方文档里可以找出答案**
 
 
 
@@ -34,3 +33,55 @@ ConfigurableApplicationContext  -> ApplicationContext <- BeanFactory
 
 BeanFactory 是底层的 IoC 容器 虽然有继承关系 但是是2个对象
 
+## 使用 Spring IoC 容器
+
+- BeanFactory 是 Spring 底层 IoC 容器
+
+  ```java
+  //创建 beanFactory 容器
+  DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+  XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
+  //classpath:/META-INF/dependency-injection-context.xml
+  String classPath = "classpath:/META-INF/dependency-injection-context.xml";
+  //加载资源
+  int beanCount =  reader.loadBeanDefinitions(classPath);
+  System.out.println(" Bean 的个数 " + beanCount);
+  ```
+
+- ApplicationContext 是具备应用特性 BeanFactory 超集
+
+```java
+AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+    applicationContext.register(AnnotationsApplicationContextAsIoCContainerDemo.class);
+    applicationContext.refresh();
+    lookupCollectionByType(applicationContext);
+}
+
+@Bean
+public User user() {
+    User user = new User();
+    user.setId(1L);
+    user.setName("Spring-Dive");
+    return user;
+}
+```
+
+## IoC 生命周期概述
+
+- 启动
+
+  ```java
+  applicationContext.register(AnnotationsApplicationContextAsIoCContainerDemo.class);
+  ```
+
+- 运行
+
+  ```java
+  applicationContext.refresh();
+  ```
+
+- 停止
+
+  ```java
+  applicationContext.close();
+  ```
