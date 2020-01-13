@@ -346,3 +346,35 @@ SELECT * FROM students_score t1 WHERE NOT EXISTS (SELECT 1 FROM students_score t
 
 ```
 
+## 2020-01-13
+
+有如下一张表  Order
+
+| shipid | paydate   | payno |
+| ------ | --------- | ----- |
+| 1001   | 2019/11/2 | 5     |
+| 1001   | 2019/11/2 | 3     |
+| 1001   | 2019/11/3 | 1     |
+| 1001   | 2019/11/3 | 3     |
+| 1002   | 2019/11/9 | 1     |
+| 1002   | 2019/11/9 | 4     |
+| 1002   | 2019/11/8 | 3     |
+| 1002   | 2019/11/8 | 2     |
+|        |           |       |
+
+查询出每个发货单号(shipid)，最早付款时间(paydate)和最小付款单号(payno)
+
+结果如下
+
+| shipid | paydate   | payno |
+| ------ | --------- | ----- |
+| 1002   | 2019/11/2 | 3     |
+| 1002   | 2019/11/8 | 2     |
+
+```sql
+select * from Orders 
+where id in (
+select SUBSTRING_INDEX(GROUP_CONCAT(id ORDER BY pay_date,pay_no),',',1) from Orders
+GROUP BY shop_id
+)
+```
