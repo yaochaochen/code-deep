@@ -70,3 +70,10 @@
 
   ​	Bean 的 id 和 name 属性非必须制定，如果留空的话，容器会为 Bean 自动生成一个唯一的名称。 Bean的命名尽管没有限制，不过官方建议采取驼峰命名
 
+- Bean 名称生成器（BeanNameGenerator）
+
+- 由 Spring  Framework2.0.3 引入 框架内建两种实现
+
+  ​	DefaultBeanNameGenerator 默认通用 BeanNameGenerator 实现的
+
+- AnnotationBeanNameGenerator: 基于注解扫描 BeanNameGenerator 实现，起始于Spring Framework 2.5
