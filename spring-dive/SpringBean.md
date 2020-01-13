@@ -34,7 +34,7 @@
 | Autowiring mode          | Bean 自动绑定模式                               |
 | Lazy initialization mode | Bean 延迟加载初始化模式                         |
 | Initalization method     | Bean 初始化回调方法名称                         |
-| Desstruction method      | Bean 销毁回调方法名称                           |
+| Destruction method       | Bean 销毁回调方法名称                           |
 
 ## BeanDefinition 构建
 
