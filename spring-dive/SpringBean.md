@@ -39,4 +39,34 @@
 ## BeanDefinition 构建
 
 - 通过 BeanDefinitionBuilder  
+
+  ```java
+   BeanDefinitionBuilder builder =  BeanDefinitionBuilder.genericBeanDefinition(User.class);
+          //设置属性
+          builder.addPropertyValue("age", 43);
+          builder.addPropertyValue("name", "Spring-Dive");
+  ```
+
+  
+
 - 通过 AbstractBeanDefinition 以及派生类
+
+```java
+ GenericBeanDefinition genericBeanDefinition = new GenericBeanDefinition();
+        genericBeanDefinition.setBeanClass(User.class);
+        MutablePropertyValues mutablePropertyValues = new MutablePropertyValues();
+        mutablePropertyValues.addPropertyValue("age", 1);
+        mutablePropertyValues.addPropertyValue("name", "Spring");
+        genericBeanDefinition.setPropertyValues(mutablePropertyValues);
+```
+
+##  命名 Spring Bean
+
+- Bean 名称
+
+  每个 Bean 拥有一个或多个标记符（identifiers）, 这些标识在 Bean 所在的容器必须是唯一的，通常，一个Bean仅有一个标识符 如果需要额外的，可以考虑使用别名（Alias）来扩充。
+
+  ​	在基于 XML 的配置元信息中，开发人员可以通过 id 或者 name 属性规范 Bean  的标识符。通常 Bean 的标识符有字母组成， 允许出现特殊字符，如果想引入 Bean 的别名的话，可以 name 属性使用 半角符号 或者分号 来分隔。
+
+  ​	Bean 的 id 和 name 属性非必须制定，如果留空的话，容器会为 Bean 自动生成一个唯一的名称。 Bean的命名尽管没有限制，不过官方建议采取驼峰命名
+
