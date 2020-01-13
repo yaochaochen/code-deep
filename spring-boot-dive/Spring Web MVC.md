@@ -4,7 +4,7 @@
 
 ### 基础架构
 
-![image-20200113141923587](../../image/image-2020011314191.png)
+![image-20200113141923587](/image/image-2020011314191.png)
 
 - 特点
   - 请求/响应(Request/Respose)
@@ -19,11 +19,11 @@
 
 ### 核心架构 [前端控制器 Front Controller](http://www.corej2eepatterns.com/FrontController.htm)
 
-![image-20200113143543750](../../image/image-1.png)
+![image-20200113143543750](../image/image-1.png)
 
 
 
-![image-20200113143619093](../../image/image-2.png)
+![image-20200113143619093](../image/image-2.png)
 
 - 资源 http://www.corej2eepatterns.com/FrontController.htm
 - 实现: Spring Web MVC DispatcherServlet
@@ -31,7 +31,7 @@
 
 ### Spring Web MVC 架构
 
-![image-20200113143805930](../../image/image-3.png)
+![image-20200113143805930](../image/image-3.png)
 
 ### 认识 Spring Web MVC
 
@@ -71,7 +71,7 @@
 
 #### 交互流程
 
-![image-20200113151035601](../../image/image-4.png)
+![image-20200113151035601](../image/image-4.png)
 
 ### Web MVC 注解驱动
 
