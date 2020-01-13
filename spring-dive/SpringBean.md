@@ -22,3 +22,21 @@
   - 其他 Bean 引用 
   - 配置设置
 
+## BeanDefinition 元信息
+
+| 属性(Property)           | 说明                                            |
+| ------------------------ | ----------------------------------------------- |
+| Class                    | Bean 全类名，必须是具体的类，不能抽象类或者接口 |
+| Name                     | Bean 的名称或者ID                               |
+| Scope                    | Bean 的作用域                                   |
+| Constructor arguments    | Bean 构造器参数 用于依赖注入                    |
+| Properties               | Bean 属性设置 用于依赖注入                      |
+| Autowiring mode          | Bean 自动绑定模式                               |
+| Lazy initialization mode | Bean 延迟加载初始化模式                         |
+| Initalization method     | Bean 初始化回调方法名称                         |
+| Desstruction method      | Bean 销毁回调方法名称                           |
+
+## BeanDefinition 构建
+
+- 通过 BeanDefinitionBuilder  
+- 通过 AbstractBeanDefinition 以及派生类
