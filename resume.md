@@ -42,7 +42,7 @@
 
 在这个项目中使用很多设计模型，抽离核心业务层保证代码的高解耦，比如在退款中，存在很多种类型对接商家的接口，在业务层使用策略设计模式，根据退款方式解耦负重代码实现，为此实现了低耦合，易扩展的退款业务。代码ULM如下：
 
-![Package strategy](image/Package strategy.png)
+![Package strategy](/image/Package strategy.png)
 
 在 GateWay 层完成了接口 token 桶令牌方式进行API签名、API 接口鉴权和流量控制。比如 API 校验签名 代码如下:
 
