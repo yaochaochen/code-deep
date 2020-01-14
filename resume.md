@@ -201,6 +201,7 @@ public class YueBusinessLogicException extends YueException {
 - [Spring-Dive](https://github.com/yaochaochen/note/blob/master/spring-dive/)
 
 - [Spring-Boot-Dive](https://github.com/yaochaochen/note/blob/master/spring-boot-dive)
+- [每日SQL]([https://github.com/yaochaochen/note/blob/master/sql/SQL%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98.md](https://github.com/yaochaochen/note/blob/master/sql/SQL每日一题.md)) 
 
 ------
 
