@@ -94,4 +94,27 @@
     
     ```
 
-    
+## 注册 Spring Bean 
+
+- BeanDefinition注册
+
+  - XML 配置元信息
+    - <bean name=""..../>
+  - Java 注解配置元信息
+    - @Bean
+    - @Component
+    - @Import
+
+- Java API配置元信息
+
+  - 命名方式:
+
+    ​	 BeanDefintionRegistry#registerBeanDefinition(String, BeanDefinition)
+
+  - 非命名方式:
+
+    ​	BeanDefinitionReaderUtils#registerBeanDefinition(AbstractBeanDefinition , BeanDefinitionRegistry)
+
+  - 配置类方式:
+
+    ​	AnnotatedBeanDefinitionReader#register(Class...)
