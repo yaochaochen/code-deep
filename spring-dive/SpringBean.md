@@ -77,3 +77,21 @@
   ​	DefaultBeanNameGenerator 默认通用 BeanNameGenerator 实现的
 
 - AnnotationBeanNameGenerator: 基于注解扫描 BeanNameGenerator 实现，起始于Spring Framework 2.5
+
+## Spring Bean 的别名
+
+- Bean 别名（Alias） 的价值
+
+  - 复用现有的 BeanDefinition 
+
+  - 更具有场景化的命名方法，比如
+
+    ​	
+
+    ```xml
+    <alias name="myApp-dataSoucre" alias="subsystemA-dataSource"/>
+    <alias name="myApp-dataSoucre" alias="subsystemB-dataSource"/>
+    
+    ```
+
+    
