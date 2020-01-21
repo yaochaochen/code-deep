@@ -130,3 +130,21 @@
     - 通过 ServiceLoaderFactoryBean （配置元信息: XML 、Java 注解和Java API)
     - 通过 AutowireCapableBeanFactory#createBean()
     - 通过 BeanDefinitionRegister#registerBeanDefinition()
+
+##  初始化 Spring Bean
+
+- Bean 初始（Initalization）
+
+  - @PostConstruct 标注方法
+
+  - 实现 InitializingBean 接口的 afterPropertiesSet 方法
+
+  - 自定义初始化方法
+
+    - XML 配置 <bean init-method="init".../>
+
+    - Java 注解 @Bean(initMethod = "init")
+
+    - Java API AbstractBeanDefinition#setInitMethodName
+
+      
