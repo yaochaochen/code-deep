@@ -142,9 +142,12 @@
   - 自定义初始化方法
 
     - XML 配置 <bean init-method="init".../>
-
-    - Java 注解 @Bean(initMethod = "init")
-
+- Java 注解 @Bean(initMethod = "init")
     - Java API AbstractBeanDefinition#setInitMethodName
 
-      
+
+
+## 销毁 Spring Bean
+
+
+
