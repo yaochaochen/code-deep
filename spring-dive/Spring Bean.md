@@ -149,5 +149,9 @@
 
 ## 销毁 Spring Bean
 
-
-
+- @PerDestory标记方法
+- 实现 DisposableBean 接口的 destory() 方法
+- 自定义销毁方法
+  - XML 配置 <bean desory=""destory" .../>
+  - Java 注解 @Bean(destory="desory")
+  - Java API AbstractBeanDefinition#setDestoryMethodName(String)
