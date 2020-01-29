@@ -35,6 +35,19 @@
 
 ## 层次性依赖查找
 
+- 层次性依赖查找接口 -HierarchicalBeanFactory
+  - 双亲 BeanFactory：getParentBeanFactory()
+  - 层次性查找
+    - 根据 Bean 名称查找
+      - 基于containsLocalBean 方法
+    - 根据 Bean 类型查找实例列表
+      - 单一类型 BeanFactoryUtils#beanOfType
+      - 集合类型 BeanFactoryUtils#beansOfTypeIncludingAncestors
+    - 根据 Java 注解查找名称列表
+      - BeanFactoryUtils#beanNamesForTypeIncludingAncestors
+
+
+
 ## 延迟依赖查找
 
 ## 安全依赖查找
