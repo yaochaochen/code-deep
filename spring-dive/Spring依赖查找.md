@@ -50,6 +50,26 @@
 
 ## 延迟依赖查找
 
+- Bean 延迟依赖查找接口
+
+  - ```java
+    org.springframework.beans.factory.ObjectFactory
+    ```
+
+    
+
+    - ```java
+      org.springframework.beans.factory.ObjectProvider
+      ```
+
+      - Spring 5 对 Java 8 特性扩展
+        - 函数式接口
+          - getlfAvailable(Supplier)
+          - ifAvailable(Consumer)
+        - Stream 扩展 -stream()
+
+    
+
 ## 安全依赖查找
 
 ## 内建可查找的依赖
