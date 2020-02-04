@@ -72,6 +72,18 @@
 
 ## 安全依赖查找
 
+- 依赖查找安全性对比
+
+  | 依赖查找类型 | 代表实现                           | 是否安全 |
+  | ------------ | ---------------------------------- | -------- |
+  | 单一类型查找 | BeanFactory#getBean                | 否       |
+  |              | ObjectFactory#getObject            | 否       |
+  |              | ObjectProvider#getlfAvailable      | 是       |
+  | 集合类型查找 | ListableBeanFactory#getBeansOfType | 是       |
+  |              | ObjectProvider#stream              | 是       |
+
+  **注意** **层次性依赖查找的安全性取决于其扩展的单一或集合类型的 BeanFactory **
+
 ## 内建可查找的依赖
 
 ## 依赖查找中的经典异常
