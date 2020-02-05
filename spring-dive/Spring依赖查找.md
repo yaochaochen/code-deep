@@ -82,7 +82,7 @@
   | 集合类型查找 | ListableBeanFactory#getBeansOfType | 是       |
   |              | ObjectProvider#stream              | 是       |
 
-  **注意** **层次性依赖查找的安全性取决于其扩展的单一或集合类型的 BeanFactory **
+   **注意:  层次性依赖查找的安全性取决于其扩展的单一或集合类型的 BeanFactory**
 
 ## 内建可查找的依赖
 
