@@ -93,8 +93,9 @@
 | environment                 | Environment 对象                 | 外部化配置            |
 | systemProperties            | java.util.Properties 对象        | Java 系统属性         |
 | systemEnvironment           | java.util.Map 对象               | 操作系统环境变量      |
-| messageProcessor            | LifecycleProcessor 对象          | Lifecycle Bean 处理器 |
+| lifecycleProcessor          | LifecycleProcessor 对象          | Lifecycle Bean 处理器 |
 | ApplicationEventMulticaster | ApplicationEventMulticaster 对象 | Spring 事件广播器     |
+| messgeSource                | messgeSource 对象                | 国际化文案            |
 
 
 
