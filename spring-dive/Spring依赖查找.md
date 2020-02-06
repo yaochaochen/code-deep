@@ -110,5 +110,15 @@
 
 ## 依赖查找中的经典异常
 
-## 
+- BeansException 子类型
+
+| 异常类型                        | 触发类型                                | 场景举例                                   |
+| ------------------------------- | --------------------------------------- | ------------------------------------------ |
+| NoSuchBeanDefinitionException   | 当查找 Bean 不存在于IoC容器时           | BeanFactory#getBeanObjectFactory#getObject |
+| NoUniqueBeanDefinitionException | 类型依赖查找时，IoC容器存在多个Bean实例 | BeanFactory#getBean(Class)                 |
+| BeanInstantiationException      | 当Bean类型对应非具体类时                | BeanFactory#getBean                        |
+| BeanCreationException           | 当Bean 初始化过程中                     | Bean 初始化方法执行异常时                  |
+| BeanDefinitionStoreException    | 当BeanDefinition 配置元信息非法是       | XML 配置资源无法打开时                     |
+|                                 |                                         |                                            |
+|                                 |                                         |                                            |
 
