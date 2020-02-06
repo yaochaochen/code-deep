@@ -97,6 +97,15 @@
 | ApplicationEventMulticaster | ApplicationEventMulticaster 对象 | Spring 事件广播器     |
 | messgeSource                | messgeSource 对象                | 国际化文案            |
 
+- 注解驱动 Spring 应用上下文内建可查找依赖
+
+| Bean 名称                                    | Bean 实例                                 | 使用场景                      |
+| -------------------------------------------- | ----------------------------------------- | ----------------------------- |
+| org.springframework.context.annotation       | ConfigurationClassPostProcessor 对象      | 处理Spring 配置类             |
+| org.springframework.beans.factory.annotation | AutowiredAnnotationBeanPostProcessor 对象 | 处理 @Autowire 以及@Value注解 |
+| org.springframework.beans.factory.annotation | CommonAnnotationBeanPostProcessor         | 条件激活                      |
+| org.springframework.beans.factory.annotation | EventListenerMethodProcessor              | 处理消息时间                  |
+
 
 
 ## 依赖查找中的经典异常
