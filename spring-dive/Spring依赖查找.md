@@ -114,7 +114,7 @@
 
 | 异常类型                        | 触发类型                                | 场景举例                                   |
 | ------------------------------- | --------------------------------------- | ------------------------------------------ |
-| NoSuchBeanDefinitionException   | 当查找 Bean 不存在于IoC容器时           | BeanFactory#getBeanObjectFactory#getObject |
+| NoSuchBeanDefinitionException   | 当查找 Bean 不存在于IoC容器时           | BeanFactory#getBean ObjectFactory#getObject |
 | NoUniqueBeanDefinitionException | 类型依赖查找时，IoC容器存在多个Bean实例 | BeanFactory#getBean(Class)                 |
 | BeanInstantiationException      | 当Bean类型对应非具体类时                | BeanFactory#getBean                        |
 | BeanCreationException           | 当Bean 初始化过程中                     | Bean 初始化方法执行异常时                  |
