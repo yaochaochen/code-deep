@@ -22,4 +22,4 @@
 
 - Netty 做的更好之二： API更友好更强大
   - JDK 的 NIO 一些 API 不够友好 功能薄弱 例如 ByteBuffer -> Netty's ByteBuf
-  - 除了 NIO 外 也提供了其他一些增强 Threadlocal ->Netty's FastThredLocal 
+  - 除了 NIO 外 也提供了其他一些增强 Threadlocal ->Netty's FastThredLocal ‘
