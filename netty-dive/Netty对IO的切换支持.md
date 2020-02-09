@@ -47,6 +47,13 @@
   | NioServerSocketChannel | EpollServerSocketChannel | KQueueServerSocketChannel |
   | NioSocketChannel       | EpollSocketChannel       | KQueueSocketChannel       |
 
+  通用的 NIO 实现 在 Linux 下也是使用 epoll, 为什么自己单独实现？
+
+  - Netty 暴露了更多  的可控参数 比如
+    - JDK 的 NIO 默认实现是水平触发
+    - Netty 是边缘触发（默认）和水平触发可切换
+  - Netty 实现垃圾回收更少 性能更好 
+
 - NIO 一定优于 BIO 吗？
 
 - 源码解读 Netty 切换 I/O？
