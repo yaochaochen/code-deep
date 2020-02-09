@@ -1,4 +1,4 @@
-- 什么是经典的三种 I/O 模式？
+- 什么是经典的三种 I/O 模式
 
 | 排队打饭模式       | BIO(阻塞 I/O)   | <JDK1.4  |
 | ------------------ | --------------- | -------- |
@@ -18,9 +18,22 @@
   - 数据就绪后，数据谁来操作完成?
   - 数据就绪后需要自己去读取是同步 数据就绪直接读好再回调给程序叫异步
 
-- Netty 对三种 I/O模式的支持？
+- Netty 对三种 I/O模式的支持
+
+  | ~~BIO->OIO（Deprecated）~~         | NIO(Common)            | ~~AIO(Removed)~~           |
+  | ---------------------------------- | ---------------------- | -------------------------- |
+  | ~~ThreadPerChannelEventLoopGroup~~ | NioEventLoopGroup      | ~~AioEventLoopGroup~~      |
+  | ~~ThreadPerChannelEventLoop~~      | NioEventLoop           | ~~AioEventLoop~~           |
+  | ~~OioServerSocketChannel~~         | NioServerSocketChannel | ~~AioServerSocketChannel~~ |
+  | ~~OioSocketChannel~~               | NioSocketChannel       | ~~AioSocketChannel~~       |
+
+  
+
 - 为什么 Netty 仅支持 NIO？
+
 - 为什么 Netty 有多种 NIO 的支持？
+
 - NIO 一定优于 BIO 吗？
+
 - 源码解读 Netty 切换 I/O？
 
