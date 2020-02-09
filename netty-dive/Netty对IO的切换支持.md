@@ -38,7 +38,16 @@
     - Linux 常用做服务器 但是AIO实现不成熟
     - Linux 下 AIO相比 NIO 的性能提升不明显
 
-- 为什么 Netty 有多种 NIO 的支持？
+- 为什么 Netty 有多种 NIO 的支持
+
+  | COMMON                 | Linux                    | macOS/BSD                 |
+  | ---------------------- | ------------------------ | ------------------------- |
+  | NioEventLoopGroup      | EpollEventLoopGroup      | KQueueEventLoopGroup      |
+  | NioEventLoop           | EpollEventLoop           | KQueueEventLoop           |
+  | NioServerSocketChannel | EpollServerSocketChannel | KQueueServerSocketChannel |
+  | NioSocketChannel       | EpollSocketChannel       | KQueueSocketChannel       |
+
 - NIO 一定优于 BIO 吗？
+
 - 源码解读 Netty 切换 I/O？
 
