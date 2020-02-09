@@ -29,11 +29,16 @@
 
   
 
-- 为什么 Netty 仅支持 NIO？
+- 为什么 Netty 仅支持 NIO
+
+  - 为什么不建议阻塞 I/O (BIO/OIO)
+    - 连接数高的情况下:阻塞->消耗资源 效率低
+  - 为什么删除已经做好的 AIO 支持
+    - Windows 实现成熟，但是很少用来做服务器
+    - Linux 常用做服务器 但是AIO实现不成熟
+    - Linux 下 AIO相比 NIO 的性能提升不明显
 
 - 为什么 Netty 有多种 NIO 的支持？
-
 - NIO 一定优于 BIO 吗？
-
 - 源码解读 Netty 切换 I/O？
 
