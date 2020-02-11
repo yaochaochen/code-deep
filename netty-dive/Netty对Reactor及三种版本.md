@@ -17,3 +17,11 @@
 Reactor 是一种开发模式，模式的核心流程:
 
 注册事件->扫描事件->处理事件
+
+| clinet/Server | SocketChannel/ServerSocketChannel | OP_ACCEPT | OP_CONNECT | OP_WRITER | OP_READ |
+| ------------- | --------------------------------- | --------- | ---------- | --------- | ------- |
+| client        | SocketChannel                     |           | Y          | Y         | Y       |
+| server        | ServerSocketChannel               | Y         |            |           |         |
+| server        | SocketChannel                     |           |            | Y         | Y       |
+|               |                                   |           |            |           |         |
+
