@@ -23,5 +23,12 @@ Reactor 是一种开发模式，模式的核心流程:
 | client        | SocketChannel                     |           | Y          | Y         | Y       |
 | server        | ServerSocketChannel               | Y         |            |           |         |
 | server        | SocketChannel                     |           |            | Y         | Y       |
-|               |                                   |           |            |           |         |
 
+- Netty 中使用 Reactor 模式
+
+  | Reactor 单线程模式        | EventLoopGroup eventGroup = new NioEventLoopGroup(1)         |
+  | ------------------------- | ------------------------------------------------------------ |
+  | 非主从 Reactor 多线程模式 | EventLoopGroup eventGroup = new NioEventLoopGroup()          |
+  | 主从 Reactor 多线程模式   | EventLoopGroup bossGroup = new NioEventLoopGroup() EventLoopGroup workerGroup = new NioEventLoopGroup() |
+
+  
