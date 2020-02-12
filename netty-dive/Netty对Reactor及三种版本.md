@@ -251,10 +251,21 @@ protected Object decode(
   - ByteBuf(用户数据) -> Java Object
 
 - 常用的二次编解码方式
-  - Java 序列化
-  - Marshaling
-  - XML 
-  - JOSN
-  - MessagePack
-  - Protobuf
+
+  Java 序列化
+
+  Marshaling
+
+  XML 
+
+  JOSN
+
+  MessagePack
+
+  Protobuf
+
   - 其他
+
+- 编码选择依据
+  - 编码空间大小
+  - 编码时间
