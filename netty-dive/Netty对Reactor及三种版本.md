@@ -211,7 +211,7 @@ protected Object decode(
 ```
 
 ```java
-* <h3>2 bytes length field at offset 1 in the middle of 4 bytes header,
+/*** <h3>2 bytes length field at offset 1 in the middle of 4 bytes header,
 *     strip the first header field and the length field, the length field
 *     represents the length of the whole message</h3>
 *
@@ -233,4 +233,28 @@ protected Object decode(
 * | 0xCA | 0x0010 | 0xFE | "HELLO, WORLD" |      | 0xFE | "HELLO, WORLD" |
 * +------+--------+------+----------------+      +------+----------------+
 * </pre>
+***/
 ```
+
+## 二次编码
+
+- 解决了半包粘包问题的常用三种解码器叫做一次解码器
+
+  那么我们还要对象转换 称做二次解码 对应编码器为将 Java 对象转化为字节流方便存储或者传输
+
+- 一次解码器 : ByteToMessageDecoder
+
+  - io.netty.buffer.ByteBuf(原始数据流) -> io.netty.buffer.ByteBuf(用户数据)
+
+- 二次解码器 ： MessageToMessageDecoder
+
+  - ByteBuf(用户数据) -> Java Object
+
+- 常用的二次编解码方式
+  - Java 序列化
+  - Marshaling
+  - XML 
+  - JOSN
+  - MessagePack
+  - Protobuf
+  - 其他
