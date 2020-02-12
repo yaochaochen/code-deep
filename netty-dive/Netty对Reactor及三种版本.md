@@ -190,3 +190,47 @@ Reactor 是一种开发模式，模式的核心流程:
   }
   ```
 
+```java
+protected final void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+    Object decoded = decode(ctx, in);
+    if (decoded != null) {
+        out.add(decoded);
+    }
+}
+```
+
+```java
+protected Object decode(
+        @SuppressWarnings("UnusedParameters") ChannelHandlerContext ctx, ByteBuf in) throws Exception {
+    if (in.readableBytes() < frameLength) {
+        return null;
+    } else {
+        return in.readRetainedSlice(frameLength);
+    }
+}
+```
+
+```java
+* <h3>2 bytes length field at offset 1 in the middle of 4 bytes header,
+*     strip the first header field and the length field, the length field
+*     represents the length of the whole message</h3>
+*
+* Let's give another twist to the previous example.  The only difference from
+* the previous example is that the length field represents the length of the
+* whole message instead of the message body, just like the third example.
+* We have to count the length of HDR1 and Length into <tt>lengthAdjustment</tt>.
+* Please note that we don't need to take the length of HDR2 into account
+* because the length field already includes the whole header length.
+* <pre>
+* lengthFieldOffset   =  1
+* lengthFieldLength   =  2
+* <b>lengthAdjustment</b>    = <b>-3</b> (= the length of HDR1 + LEN, negative)
+* <b>initialBytesToStrip</b> = <b> 3</b>
+*
+* BEFORE DECODE (16 bytes)                       AFTER DECODE (13 bytes)
+* +------+--------+------+----------------+      +------+----------------+
+* | HDR1 | Length | HDR2 | Actual Content |----->| HDR2 | Actual Content |
+* | 0xCA | 0x0010 | 0xFE | "HELLO, WORLD" |      | 0xFE | "HELLO, WORLD" |
+* +------+--------+------+----------------+      +------+----------------+
+* </pre>
+```
