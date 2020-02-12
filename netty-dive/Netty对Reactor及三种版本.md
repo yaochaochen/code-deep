@@ -132,3 +132,61 @@ Reactor 是一种开发模式，模式的核心流程:
 
 - 解读 Netty 处理粘包 半包的源码
 
+  ```java
+  protected void callDecode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
+      try {
+          while (in.isReadable()) {
+              int outSize = out.size();
+  
+              if (outSize > 0) {
+                  fireChannelRead(ctx, out, outSize);
+                  out.clear();
+  
+                  // Check if this handler was removed before continuing with decoding.
+                  // If it was removed, it is not safe to continue to operate on the buffer.
+                  //
+                  // See:
+                  // - https://github.com/netty/netty/issues/4635
+                  if (ctx.isRemoved()) {
+                      break;
+                  }
+                  outSize = 0;
+              }
+  
+              int oldInputLength = in.readableBytes();
+              decodeRemovalReentryProtection(ctx, in, out);
+  
+              // Check if this handler was removed before continuing the loop.
+              // If it was removed, it is not safe to continue to operate on the buffer.
+              //
+              // See https://github.com/netty/netty/issues/1664
+              if (ctx.isRemoved()) {
+                  break;
+              }
+  
+              if (outSize == out.size()) {
+                  if (oldInputLength == in.readableBytes()) {
+                      break;
+                  } else {
+                      continue;
+                  }
+              }
+  
+              if (oldInputLength == in.readableBytes()) {
+                  throw new DecoderException(
+                          StringUtil.simpleClassName(getClass()) +
+                                  ".decode() did not read anything but decoded a message.");
+              }
+  
+              if (isSingleDecode()) {
+                  break;
+              }
+          }
+      } catch (DecoderException e) {
+          throw e;
+      } catch (Exception cause) {
+          throw new DecoderException(cause);
+      }
+  }
+  ```
+
