@@ -212,7 +212,7 @@ protected Object decode(
 
 ```java
 /*** <h3>2 bytes length field at offset 1 in the middle of 4 bytes header,
-*     strip the first header field and the length field, the length field
+*     strip the firdasdst header field and the length field, the length field
 *     represents the length of the whole message</h3>
 *
 * Let's give another twist to the previous example.  The only difference from
@@ -268,4 +268,5 @@ protected Object decode(
 
 - 编码选择依据
   - 编码空间大小
-  - 编码时间
+  - 编码时间  
+  - 
