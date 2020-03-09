@@ -22,3 +22,35 @@ Sysnchronized method -> Synchronized block
 
 AtomicLong -> volatile long + AtomicLongFiledUpdater
 
+### Atomic long VS long :
+
+前者是一个对象， 包含对象头 (object header) 以用来 保存 hashcode lock 等信息，32位系统占用8字节 64位系统占16字节 所以在64位系统情况下 
+
+- volatile long = 8 byte
+- AtomicLong = 8 bytes (volatile long) + 16bytes(对象头) + 8bytes(引用) = 32bytes
+
+至少节约24字节
+
+结论:
+
+Atomic * objects -> volatile primary type +static atomic*FiledUpdater
+
+## 注意锁的速度 -> 提高并发性
+
+例1 记录内存分配字节数等功能用到的 LongCounter (io.netty.util.internal.PlatformDependent#newLongCounter())
+
+高并发时: java.util.concurrent.atomic.AtomicLong -> java.util.concurrent.atomic.LongAdder
+
+例2: 曾经根据不同情况选择不同的并发包实现 JDK <1.8考虑
+
+ConcurrentHashMapV8(ConcurrentHashMap 在 JDK 8 中的版本现在)
+
+
+
+## 不同场景选择不同的并发包->因需而变
+
+例1 关闭和等待关闭时间执行器 (Event Excutor)
+
+Object.wait/notify -> CountDownLatch
+
+io.netty.util.concurrent.SingleThredEventExector#threadLock
