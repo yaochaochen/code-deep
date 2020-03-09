@@ -54,3 +54,16 @@ ConcurrentHashMapV8(ConcurrentHashMap 在 JDK 8 中的版本现在)
 Object.wait/notify -> CountDownLatch
 
 io.netty.util.concurrent.SingleThredEventExector#threadLock
+
+例2 Nio Event loop 中负责存储 task 的 Queue 
+
+Jdk LinkedBlockingQueue(MPMC) -> jctools MPC
+
+## Netty 应用场景下: 局部串行 + 整体并行> 一个队列+多个线程模式
+
+- 降低用户开发难度 逻辑简单 提升处理性能
+- 避免锁带来的上线文切换和并发保护等额外开销
+
+避免用锁用   ThreadLocal 来避免资源争用 例如 Netty 轻量级的线程池实现
+
+io.netty.util.Recycler#threadLocal
