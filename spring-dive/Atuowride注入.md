@@ -38,5 +38,21 @@
     - javax.annotation.PostConstruct
     - javax.annotation.PreDestory
 
+- 面试题
 
+  - 有多少种依赖注入方式
+
+    - 构造器注入
+    - Setter 注入
+    - 字段注入
+    - 方法注入
+    - 接口回调注入
+
+  - 你偏好构造器注入还是 Setter 注入
+
+    - 两种依赖注入均可使用 如果必须依赖的话，那么推荐使用构造器注入， Setter 注入用于可选依赖
+
+  - Spring 依赖注入的来源有那些
+
+    
 
