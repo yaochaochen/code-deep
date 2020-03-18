@@ -26,5 +26,17 @@
   （2.1.2.1）resolveDependency根据具体类型返回候选bean的集合或primary 的bean
   （2.1.3）利用反射设置field
 
-  
-  
+- @ Inject 注入
+  - 如果 JSR-330 存在于 ClassPath 中，复用 AtuowiredAnntationBeanPostProcessor 实现
+- Java 通用注解原理
+  - CommonAnnotationBeanPOSTProcessor
+    - 注入注解
+      - javax.xml.ws.WebServiceRef
+      - java.ejb.EJB
+      - javax.annontation,Resource
+    - 生成周期注解
+    - javax.annotation.PostConstruct
+    - javax.annotation.PreDestory
+
+
+
