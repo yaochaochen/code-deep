@@ -47,6 +47,11 @@
           builder.addPropertyValue("name", "Spring-Dive");
   ```
 
+  ```java
+  //非顶层 Bean 一般Bean
+  BeanDefinitionBuilder.genericBeanDefinition()
+  ```
+
   
 
 - 通过 AbstractBeanDefinition 以及派生类
